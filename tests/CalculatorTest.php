@@ -3,6 +3,7 @@
 namespace Tests\Vadim\UnitExamples;
 
 use PHPUnit_Framework_TestCase;
+use Vadim\UnitExamples\AdditionOperator;
 use Vadim\UnitExamples\Calculator;
 use VladaHejda\AssertException;
 
@@ -12,8 +13,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
 
     public function testAdd()
     {
-        $calculator = new Calculator();
-        $result = $calculator->add(1, 2);
+        $result = $this->createCalculator()->execute('+', 1, 2);
         $this->assertSame(3, $result);
     }
 
@@ -27,8 +27,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
      */
     public function addWidthDataProvider($first, $second, $expectedResult)
     {
-        $calculator = new Calculator();
-        $result = $calculator->add($first, $second);
+        $result = $this->createCalculator()->execute('+', $first, $second);
         $this->assertSame($expectedResult, $result);
     }
 
@@ -52,8 +51,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
      */
     public function testExceptionIfParametersIsNotNumeric($first, $second)
     {
-        $calculator = new Calculator();
-        $calculator->add($first, $second);
+        $this->createCalculator()->execute('+', $first, $second);
     }
 
     /**
@@ -82,12 +80,22 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
      */
     public function testExceptionIfParametersIsNotNumericWidthAssert($first, $second)
     {
-        $calculator = new Calculator();
+        $calculator = $this->createCalculator();
 
         $test = function () use ($calculator, $first, $second) {
-            $calculator->add($first, $second);
+            $calculator->execute('+', $first, $second);
         };
 
         $this->assertException($test, \InvalidArgumentException::class);
+    }
+
+    private function createCalculator()
+    {
+        $calculator = new Calculator();
+        $calculator
+            ->addOperator(new AdditionOperator())
+        ;
+
+        return $calculator;
     }
 }
