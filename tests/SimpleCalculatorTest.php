@@ -86,6 +86,21 @@ class SimpleCalculatorTest extends PHPUnit_Framework_TestCase
      * @param mixed $first
      * @param mixed $second
      */
+    public function testExceptionIfParametersIsNotNumericWidthMethod($first, $second)
+    {
+        $calculator = new SimpleCalculator();
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $calculator->add($first, $second);
+    }
+
+    /**
+     * @dataProvider notValidParametersProvider
+     *
+     * @param mixed $first
+     * @param mixed $second
+     */
     public function testExceptionIfParametersIsNotNumericWidthAssert($first, $second)
     {
         $calculator = new SimpleCalculator();
