@@ -3,61 +3,80 @@
 namespace Tests\Vadim\UnitExamples;
 
 use PHPUnit_Framework_TestCase;
-use Vadim\UnitExamples\AdditionOperator;
+use Tests\Vadim\UnitExamples\Fixtures\ManualOperatorStub;
 use Vadim\UnitExamples\Calculator;
+use Vadim\UnitExamples\OperatorInterface;
 use VladaHejda\AssertException;
 
 class CalculatorTest extends PHPUnit_Framework_TestCase
 {
     use AssertException;
 
-    public function testAdd()
+    public function testExceptionIfOperatorIsNotSupportedWithManualStub()
     {
-        $result = $this->createCalculator()->execute('+', 1, 2);
-        $this->assertSame(3, $result);
+        $calculator = $this->createCalculator();
+        $operator = new ManualOperatorStub();
+        $calculator->addOperator($operator);
+
+        $test = function () use ($calculator) {
+            $calculator->execute('+', 1, 2);
+        };
+
+        self::assertException($test, \RuntimeException::class, null, "Operator '+' is not supported.");
+    }
+
+    public function testExceptionIfOperatorIsNotSupported()
+    {
+        $calculator = $this->createCalculator();
+        /** @var OperatorInterface|\PHPUnit_Framework_MockObject_MockObject $operator */
+        $operator = $this->getMockBuilder(OperatorInterface::class)->getMock();
+        $operator->method('__toString')->willReturn('/');
+        $calculator->addOperator($operator);
+
+        $test = function () use ($calculator) {
+            $calculator->execute('+', 1, 2);
+        };
+
+        self::assertException($test, \RuntimeException::class, null, "Operator '+' is not supported.");
+    }
+
+    public function testExceptionIfArityAndNumberOfArgumentsNotEqual()
+    {
+        $calculator = $this->createCalculator();
+        $operator = $this->generateOperatorMock();
+        $calculator->addOperator($operator);
+
+        $test = function () use ($calculator) {
+            $calculator->execute('/', 1);
+        };
+
+        self::assertException($test, \InvalidArgumentException::class, null, "Operator '/' expects exactly 2 arguments, but 1 provided.");
     }
 
     /**
-     * @test
-     * @dataProvider calculatorDataProvider
-     *
-     * @param int|float $first
-     * @param int|float $second
-     * @param int|float $expectedResult
-     */
-    public function addWidthDataProvider($first, $second, $expectedResult)
-    {
-        $result = $this->createCalculator()->execute('+', $first, $second);
-        $this->assertSame($expectedResult, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function calculatorDataProvider()
-    {
-        return [
-            [1, 2, 3],
-            [5, 5, 10],
-        ];
-    }
-
-    /**
-     * @dataProvider notValidParametersProvider
-     * @expectedException \InvalidArgumentException
+     * @dataProvider invalidArgumentsProvider
      *
      * @param mixed $first
      * @param mixed $second
      */
-    public function testExceptionIfParametersIsNotNumeric($first, $second)
+    public function testExceptionIfArgumentsIsNotNumeric($first, $second)
     {
-        $this->createCalculator()->execute('+', $first, $second);
+        $calculator = $this->createCalculator();
+        /** @var OperatorInterface|\PHPUnit_Framework_MockObject_MockObject $operator */
+        $operator = $this->generateOperatorMock();
+        $calculator->addOperator($operator);
+
+        $test = function () use ($calculator, $first, $second) {
+          $calculator->execute('/', $first, $second);
+        };
+
+        self::assertException($test, \InvalidArgumentException::class, null, 'Arguments is invalid.');
     }
 
     /**
      * @return array
      */
-    public function notValidParametersProvider()
+    public function invalidArgumentsProvider()
     {
         return [
             [new \stdClass(), 1],
@@ -72,30 +91,39 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @dataProvider notValidParametersProvider
-     *
-     * @param mixed $first
-     * @param mixed $second
-     */
-    public function testExceptionIfParametersIsNotNumericWidthAssert($first, $second)
+    public function testCallableExecuteMethod()
     {
         $calculator = $this->createCalculator();
+        $operator = $this->generateOperatorMock();
+        $operator
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->equalTo([1,2]))
+            ->willReturn(2)
+        ;
+        $calculator->addOperator($operator);
 
-        $test = function () use ($calculator, $first, $second) {
-            $calculator->execute('+', $first, $second);
-        };
+        $result = $calculator->execute('/', 1, 2);
 
-        $this->assertException($test, \InvalidArgumentException::class);
+        $this->assertSame(2, $result);
     }
-
+    /**
+     * @return Calculator
+     */
     private function createCalculator()
     {
-        $calculator = new Calculator();
-        $calculator
-            ->addOperator(new AdditionOperator())
-        ;
+        return new Calculator();
+    }
 
-        return $calculator;
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|OperatorInterface
+     */
+    private function generateOperatorMock()
+    {
+        $operator = $this->getMockBuilder(OperatorInterface::class)->getMock();
+        $operator->method('__toString')->willReturn('/');
+        $operator->method('arity')->willReturn(2);
+
+        return $operator;
     }
 }
