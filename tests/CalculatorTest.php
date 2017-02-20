@@ -67,7 +67,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
         $calculator->addOperator($operator);
 
         $test = function () use ($calculator, $first, $second) {
-          $calculator->execute('/', $first, $second);
+            $calculator->execute('/', $first, $second);
         };
 
         self::assertException($test, \InvalidArgumentException::class, null, 'Arguments is invalid.');
@@ -98,7 +98,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
         $operator
             ->expects($this->once())
             ->method('execute')
-            ->with($this->equalTo([1,2]))
+            ->with($this->equalTo([1, 2]))
             ->willReturn(2)
         ;
         $calculator->addOperator($operator);
@@ -107,6 +107,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(2, $result);
     }
+
     /**
      * @return Calculator
      */

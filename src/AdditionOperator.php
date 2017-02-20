@@ -7,17 +7,17 @@ class AdditionOperator implements OperatorInterface
     /**
      * {@inheritdoc}
      */
-    public function execute(array $args)
+    public function __toString()
     {
-        return $args[0] + $args[1];
+        return '+';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function execute(array $args)
     {
-        return '+';
+        return $args[0] + $args[1];
     }
 
     /**

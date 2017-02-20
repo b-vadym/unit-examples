@@ -9,9 +9,6 @@ class Calculator
      */
     private $operators;
 
-    /**
-     *
-     */
     public function __construct()
     {
         $this->operators = [];
