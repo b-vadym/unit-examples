@@ -13,7 +13,7 @@ return PhpCsFixer\Config::create()
         'no_useless_return' => true,
         'ordered_class_elements' => true,
         'ordered_imports' => true,
-        'concat_space' => ['spacing' => 'none'],
+        'concat_space' => ['spacing' => 'one'],
         'psr4' => true,
         'strict_comparison' => true,
         'strict_param' => true,
