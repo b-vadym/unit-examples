@@ -12,7 +12,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
 {
     use AssertException;
 
-    public function testExceptionIfOperatorIsNotSupportedWithManualStub()
+    public function testExecuteExceptionIfOperatorIsNotSupportedWithManualStub()
     {
         $calculator = $this->createCalculator();
         $operator = new ManualOperatorStub();
@@ -25,7 +25,7 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
         self::assertException($test, \RuntimeException::class, null, "Operator '+' is not supported.");
     }
 
-    public function testExceptionIfOperatorIsNotSupported()
+    public function testExecuteExceptionIfOperatorIsNotSupported()
     {
         $calculator = $this->createCalculator();
         /** @var OperatorInterface|\PHPUnit_Framework_MockObject_MockObject $operator */
@@ -40,10 +40,10 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
         self::assertException($test, \RuntimeException::class, null, "Operator '+' is not supported.");
     }
 
-    public function testExceptionIfArityAndNumberOfArgumentsNotEqual()
+    public function testExecuteExceptionIfArityAndNumberOfArgumentsNotEqual()
     {
         $calculator = $this->createCalculator();
-        $operator = $this->generateOperatorMock();
+        $operator = $this->generateOperatorMock(2, '/');
         $calculator->addOperator($operator);
 
         $test = function () use ($calculator) {
@@ -59,11 +59,10 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
      * @param mixed $first
      * @param mixed $second
      */
-    public function testExceptionIfArgumentsIsNotNumeric($first, $second)
+    public function testExecuteExceptionIfArgumentsIsNotNumeric($first, $second)
     {
         $calculator = $this->createCalculator();
-        /** @var OperatorInterface|\PHPUnit_Framework_MockObject_MockObject $operator */
-        $operator = $this->generateOperatorMock();
+        $operator = $this->generateOperatorMock(2, '/');
         $calculator->addOperator($operator);
 
         $test = function () use ($calculator, $first, $second) {
@@ -91,10 +90,10 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testCallableExecuteMethod()
+    public function testExecuteCallableExecuteOperatorMethod()
     {
         $calculator = $this->createCalculator();
-        $operator = $this->generateOperatorMock();
+        $operator = $this->generateOperatorMock(2, '/');
         $operator
             ->expects($this->once())
             ->method('execute')
@@ -117,13 +116,16 @@ class CalculatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param int $arity
+     * @param string $operatorName
+     *
      * @return \PHPUnit_Framework_MockObject_MockObject|OperatorInterface
      */
-    private function generateOperatorMock()
+    private function generateOperatorMock($arity, $operatorName)
     {
         $operator = $this->getMockBuilder(OperatorInterface::class)->getMock();
-        $operator->method('__toString')->willReturn('/');
-        $operator->method('arity')->willReturn(2);
+        $operator->method('__toString')->willReturn($operatorName);
+        $operator->method('arity')->willReturn($arity);
 
         return $operator;
     }

@@ -56,7 +56,7 @@ class SimpleCalculatorTest extends PHPUnit_Framework_TestCase
      * @param mixed $first
      * @param mixed $second
      */
-    public function testExceptionIfParametersIsNotNumeric($first, $second)
+    public function testAddExceptionIfParametersIsNotNumeric($first, $second)
     {
         $calculator = new SimpleCalculator();
         $calculator->add($first, $second);
@@ -86,7 +86,7 @@ class SimpleCalculatorTest extends PHPUnit_Framework_TestCase
      * @param mixed $first
      * @param mixed $second
      */
-    public function testExceptionIfParametersIsNotNumericWidthMethod($first, $second)
+    public function testAddExceptionIfParametersIsNotNumericWidthMethod($first, $second)
     {
         $calculator = new SimpleCalculator();
 
@@ -101,7 +101,7 @@ class SimpleCalculatorTest extends PHPUnit_Framework_TestCase
      * @param mixed $first
      * @param mixed $second
      */
-    public function testExceptionIfParametersIsNotNumericWidthAssert($first, $second)
+    public function testAddExceptionIfParametersIsNotNumericWidthAssert($first, $second)
     {
         $calculator = new SimpleCalculator();
 
