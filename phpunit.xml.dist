@@ -18,6 +18,7 @@
              yui="true" highlight="true"
              lowUpperBound="50" highLowerBound="80"
         />
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
     </logging>
 
     <listeners>
