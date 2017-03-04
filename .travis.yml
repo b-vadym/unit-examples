@@ -11,4 +11,4 @@ before_script:
 
 script:
      - vendor/bin/phpunit
-     - $HOME/.config/composer/vendor/bin/php-cs-fixer --diff --dry-run -v fix .
+     - $HOME/.composer/vendor/bin/php-cs-fixer --diff --dry-run -v fix .
